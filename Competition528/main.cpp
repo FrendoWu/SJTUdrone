@@ -160,7 +160,7 @@ int main()
 		bool turnforward = false;
 		char traindataPath[256];
 		//////// target position ////////////////	
-		ned_target(2) = 18;//7 下一目标为停机坪  3.3障碍圈
+		ned_target(2) = 5.8;//7 下一目标为停机坪  3.3障碍圈
 		ned_target(0) = 240;//这里认为图像的纵向为x轴，为了与无人机保持一致
 		ned_target(1) = 320;
 		//////////pidcontroller////////////////////
@@ -225,74 +225,73 @@ int main()
 		};
 		enumType state = right2left;
 
-
 		while (1)
 		{
 			clock_t begin = clock();
 			if (controlmode == 0)  //0起飞
 			{
-				std::cout << " LocalPositionx: " << LocalPosition.at(nextnumber - 1)[0] << " LocalPositiony: " << LocalPosition.at(nextnumber - 1)[1] << std::endl;
-				std::cout << " LocalPosition3: " << LocalPosition.at(nextnumber - 1)[2] << std::endl;
-				curr_bardata = client.getBarometerdata();
-				ned_curr(2) = curr_bardata.altitude - Barometer_origin.altitude;
-				ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
-				std::cout << "ned_curr: " << ned_curr(2) << std::endl;
-				float delta_throttle = pidZ.control(ned_curr(2)) + 0.6;
-				std::cout << "delta_throttle: " << delta_throttle << std::endl;
-				CLIP3(0.4, delta_throttle, 0.8);
-				client.moveByAngleThrottle(0.0f, 0.0f, (float)delta_throttle, 0.0f, 0.01f);
-				std::this_thread::sleep_for(std::chrono::duration<double>(0.01f));
-				std::cout << "count0: " << count0 << std::endl;
-				if (abs(ned_target(2) - ned_curr(2)) < 0.3) count0++;
-				if (count0 > 70)   //需要加判断，下一目标是停机坪或者障碍圈
-				{
-					if (nextnumber == 2 || nextnumber == 3 || nextnumber == 10)
-					{
-						controlmode = 1;
-						count0 = 0;
-						flag_image = false;
-						std::cout << "go for parking....." << std::endl;
-					}
-					else if (0.5 < LocalPosition.at(nextnumber - 1)[2]) //停机坪
-					{
-						controlmode = 1;
-						count0 = 0;
-						std::cout << "go for parking....." << std::endl;
-					}
-					else if (LocalPosition.at(nextnumber - 1)[2] < 0.5)   //障碍圈
-					{
-						ned_target(2) = 3;
-						pidX.setPoint(LocalPosition.at(nextnumber - 1)[1], 0.001, 0, 0.002);
-						pidY.setPoint(LocalPosition.at(nextnumber - 1)[0], 0.001, 0, 0.002);
-						pidZ.setPoint(ned_target(2), 0.3, 0, 0.4);
-						if (abs(ned_target(2) - ned_curr(2)) < 0.2) count_circle++;
-						std::cout << "count_circle: " << count_circle << std::endl;
-						if (count_circle > 25 && (abs(ned_target(2) - ned_curr(2)) < 0.15) )
-						{
-							count_circle = 0;
-							controlmode = 3;
-							count0 = 0;
-							std::cout << "go for circle....." << std::endl;
-						}
-					}
-					else
-					{
-						curr_bardata = client.getBarometerdata();
-						ned_curr(2) = curr_bardata.altitude - Barometer_origin.altitude;
-						ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
-						ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
-						std::cout << "ned_curr: " << ned_curr(2) << std::endl;
-						float delta_throttle = pidZ.control(ned_curr(2)) + 0.6;
-						std::cout << "delta_throttle: " << delta_throttle << std::endl;
-						CLIP3(0.4, delta_throttle, 0.8);
-						client.moveByAngleThrottle(0.0f, 0.0f, (float)delta_throttle, 0.0f, 0.01f);
-						std::this_thread::sleep_for(std::chrono::duration<double>(0.01f));
-					}
-				}
-				else
+				//std::cout << " LocalPositionx: " << LocalPosition.at(nextnumber - 1)[0] << " LocalPositiony: " << LocalPosition.at(nextnumber - 1)[1] << std::endl;
+				//std::cout << " LocalPosition3: " << LocalPosition.at(nextnumber - 1)[2] << std::endl;
+				//curr_bardata = client.getBarometerdata();
+				//ned_curr(2) = curr_bardata.altitude - Barometer_origin.altitude;
+				//ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
+				//std::cout << "ned_curr: " << ned_curr(2) << std::endl;
+				//float delta_throttle = pidZ.control(ned_curr(2)) + 0.6;
+				//std::cout << "delta_throttle: " << delta_throttle << std::endl;
+				//CLIP3(0.4, delta_throttle, 0.8);
+				//client.moveByAngleThrottle(0.0f, 0.0f, (float)delta_throttle, 0.0f, 0.01f);
+			//	std::this_thread::sleep_for(std::chrono::duration<double>(0.01f));
+			//	std::cout << "count0: " << count0 << std::endl;
+				//if (abs(ned_target(2) - ned_curr(2)) < 0.3) count0++;
+				//if (count0 > 70)   //需要加判断，下一目标是停机坪或者障碍圈
+				//{
+				//	if (nextnumber == 2 || nextnumber == 3 || nextnumber == 10)
+				//	{
+				//		controlmode = 1;
+				//		count0 = 0;
+				//		flag_image = false;
+				//		std::cout << "go for parking....." << std::endl;
+				//	}
+				//	else if (0.5 < LocalPosition.at(nextnumber - 1)[2]) //停机坪
+				//	{
+				//		controlmode = 1;
+				//		count0 = 0;
+				//		std::cout << "go for parking....." << std::endl;
+				//	}
+				//	else if (LocalPosition.at(nextnumber - 1)[2] < 0.5)   //障碍圈
+				//	{
+				//		ned_target(2) = 3;
+				//		pidX.setPoint(LocalPosition.at(nextnumber - 1)[1], 0.001, 0, 0.002);
+				//		pidY.setPoint(LocalPosition.at(nextnumber - 1)[0], 0.001, 0, 0.002);
+				//		pidZ.setPoint(ned_target(2), 0.3, 0, 0.4);
+				//		if (abs(ned_target(2) - ned_curr(2)) < 0.2) count_circle++;
+				//		std::cout << "count_circle: " << count_circle << std::endl;
+				//		if (count_circle > 25 && (abs(ned_target(2) - ned_curr(2)) < 0.15) )
+				//		{
+				//			count_circle = 0;
+				//			controlmode = 3;
+				//			count0 = 0;
+				//			std::cout << "go for circle....." << std::endl;
+				//		}
+				//	}
+				//	else
+				//	{
+				//		curr_bardata = client.getBarometerdata();
+				//		ned_curr(2) = curr_bardata.altitude - Barometer_origin.altitude;
+				//		ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
+				//		ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
+				//		std::cout << "ned_curr: " << ned_curr(2) << std::endl;
+				//		float delta_throttle = pidZ.control(ned_curr(2)) + 0.6;
+				//		std::cout << "delta_throttle: " << delta_throttle << std::endl;
+				//		CLIP3(0.4, delta_throttle, 0.8);
+				//		client.moveByAngleThrottle(0.0f, 0.0f, (float)delta_throttle, 0.0f, 0.01f);
+				//		std::this_thread::sleep_for(std::chrono::duration<double>(0.01f));
+				//	}
+				//}
+				/*else
 				{
 					std::cout << "get position failed!!!!!" << std::endl;
-				}
+				}*/
 			}
 			else if (controlmode == 1) //下一目标为停机坪
 			{				
@@ -605,6 +604,7 @@ int main()
 				std::vector<ell::Ellipse> ellipse_rgb = OnImage(image_front);
 				std::vector<ell::Ellipse> ellipse_depth = OnImage(image_depth);
 				//深度图里是否有椭圆
+				cout << "ellipse_depth.size():" << ellipse_depth.size() << endl;
 				if (ellipse_depth.size() > 0)
 				{
 					cv::namedWindow("imageScene");
@@ -674,16 +674,16 @@ int main()
 								count_go = 0;
 								Min_distance = 100;
 								client.hover();
-								if (0.5 < LocalPosition.at(nextnumber - 1)[2]) //停机坪
-								{
-									controlmode = 1;
-									std::cout << "go for parking....." << std::endl;
-								}
-								else if (LocalPosition.at(nextnumber - 1)[2] < 0.5)   //障碍圈
-								{
-									std::cout << "nextnumber: " << nextnumber << std::endl;
+								//if (0.5 < LocalPosition.at(nextnumber - 1)[2]) //停机坪
+								//{
+								//	controlmode = 1;
+								//	std::cout << "go for parking....." << std::endl;
+								//}
+								//else if (LocalPosition.at(nextnumber - 1)[2] < 0.5)   //障碍圈
+								//{
+									//std::cout << "nextnumber: " << nextnumber << std::endl;
 									controlmode = 3;
-								}
+								//}
 							}
 						}
 						else
@@ -975,9 +975,16 @@ int main()
 				{
 					count4++;
 				}
-				if (count4 > 30)
+				 if (count4 > 30)
 				{
-					client.moveByAngleThrottle(-0.1, 0, 0.59, 0.0f, 17.5f);
+					 client.moveByAngleThrottle(-0.1, -0.14, 0.59, 0.0f, 3.0f);
+					 std::this_thread::sleep_for(std::chrono::milliseconds(6000));
+					 client.moveByAngleThrottle(-0.1, 0, 0.59, 0.0f, 2.0f);//往回飞18.5秒
+					 std::this_thread::sleep_for(std::chrono::milliseconds(6000));
+					 /*
+					client.moveByAngleThrottle(0, 0.2, 0.6125 / (cos(0.2)), 0, 0.5);//右移0.7s
+					std::this_thread::sleep_for(std::chrono::milliseconds(500));
+					client.moveByAngleThrottle(-0.1, 0, 0.59, 0.0f, 18.5f);
 					std::this_thread::sleep_for(std::chrono::milliseconds(1900));
 					int j = 1;
 					std::string filename = "D://persp";
@@ -988,37 +995,37 @@ int main()
 						cv::imwrite(filename + std::to_string(j) + std::string(".jpg"), image);
 						std::cout << "no." << i << "    ";
 					}
-					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+					std::this_thread::sleep_for(std::chrono::milliseconds(3000));
 					client.hover();
 					std::this_thread::sleep_for(std::chrono::duration<double>(5.0f));
-					
-					client.moveByAngleThrottle(0, 0.2, 0.6125 / (cos(0.2)), 0, 1.2);//右移1.2s
-					std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+					*/
+					//client.moveByAngleThrottle(0, 0.2, 0.6125 / (cos(0.2)), 0, 1.2);//右移1.2s
+					//std::this_thread::sleep_for(std::chrono::milliseconds(1200));
 
 					//i = 17;
-					client.moveByAngleThrottle(0.1, 0, 0.59, 0.0f, 17.5f);
-					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
-				    j = 2;
+				//	client.moveByAngleThrottle(0.1, 0, 0.59, 0.0f, 18.5f);//往回飞18.5秒
+					//std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				    //j = 2;
 
-					std::string filename2 = "D://persp2";
-					for (int i = 1; i <= 17; ++i) {
-						auto image = img2mat.get_below_mat();
-						ImageForPosition.push_back(image); // Saved image
+					//std::string filename2 = "D://persp2";
+					/*for (int i = 1; i <= 17; ++i) {
+						auto image2 = img2mat.get_below_mat();
+						ImageForPosition2.push_back(image2); // Saved image
 						std::this_thread::sleep_for(std::chrono::milliseconds(800));
-						cv::imwrite(filename2 + std::to_string(j) + std::string("-2.jpg"), image);
+						cv::imwrite(filename2 + std::to_string(j) + std::string("-2.jpg"), image2);
 						std::cout << "2-no." << i << "    ";
 					 }
-					 std::this_thread::sleep_for(std::chrono::milliseconds(1900));
+					 std::this_thread::sleep_for(std::chrono::milliseconds(2900));
 					 client.hover();
-					 std::this_thread::sleep_for(std::chrono::duration<double>(5.0f));
+					 std::this_thread::sleep_for(std::chrono::duration<double>(5.0f));*/
 					 i = 22;//22是随便弄的，我开心就好
-
+					// LocalPosition[1][2] =  0.1;
 
 				}
 				if (i == 22)
 				{
 					count4 = 0;
-					controlmode = 5;
+					controlmode = 3;
 					home_ned(0) = 0;
 					home_ned(1) = 0;
 					home_ned(2) = 6;
@@ -1030,27 +1037,48 @@ int main()
 			}
 			else if (controlmode == 5)//采集完毕
 			{
-				std::cout << " collect data complete! " << std::endl;
+				curr_bardata = client.getBarometerdata();
+				ned_curr(2) = curr_bardata.altitude - Barometer_origin.altitude;
+				ned_curr(2) = kalman(ned_curr(2), prev, i_kalman, Q, R);
+				std::cout << "ned_curr: " << ned_curr(2) << std::endl;
+				float delta_throttle = pidZ.control(ned_curr(2)) + 0.6;
+				std::cout << "delta_throttle: " << delta_throttle << std::endl;
+				CLIP3(0.4, delta_throttle, 0.8);
+				client.moveByAngleThrottle(0.0f, 0.0f, (float)delta_throttle, 0.0f, 0.01f);
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				if (abs(ned_target(2) - ned_curr(2)) < 0.08)
+				{
+					count4++;
+				}
+				if (count4 > 30) {
+					client.moveByAngleThrottle(-0.1, 0.1, 0.59, 0.0f, 2.0f);
+					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
+				}
+				controlmode = 3;
+
+				/* std::cout << " collect data complete! " << std::endl;
 				if (!FLAG_CB)
 				{
-					LocalPosition = calculate(18, ImageForPosition);
+					LocalPosition = calculate(25, ImageForPosition, ImageForPosition2);
 					if (LocalPosition[10][1] < -6.0)
 						ten_position = 2;
 					else if (LocalPosition[10][1] < 3.0)
 						ten_position = 1;
-					//client.moveByAngleThrottle(0.1, 0, 0.59, 0.0f, 17.5f);
-					//std::this_thread::sleep_for(std::chrono::milliseconds(17500));//返回原点
-					client.moveByAngleThrottle(0.2, 0, 0.6125 / (cos(0.2)), 0, 1.2);//左移1.2s，返回原点
-					std::this_thread::sleep_for(std::chrono::milliseconds(1200));
+					client.moveByAngleThrottle(0.1, 0, 0.59, 0.0f, 17.5f);
+					std::this_thread::sleep_for(std::chrono::milliseconds(17500));//返回原点
+					client.hover();
+					client.moveByAngleThrottle(0.2, 0, 0.6125 / (cos(0.2)), 0, 2.0);//左移1.2s，返回原点
+					std::this_thread::sleep_for(std::chrono::milliseconds(2000));
 					client.hover();
 					std::this_thread::sleep_for(std::chrono::duration<double>(3.0f));
 					FLAG_CB = true;
-				}
+				}*/
+				/*
 				if (abs(ned_curr(2)- home_ned(2))<0.3)
 				{
 					std::this_thread::sleep_for(std::chrono::duration<double>(1.0f));
 					std::cout << " LocalPositionx: " << LocalPosition.at(nextnumber - 1)[0] << " LocalPositiony: " << LocalPosition.at(nextnumber - 1)[1] << std::endl;
-					controlmode = 1;//目标停机坪
+					controlmode = 1;
 					count_home = 0;
 					ned_target(2) = 7;
 					pidZ.setPoint(ned_target(2), 0.3, 0, 0.4);
@@ -1068,7 +1096,7 @@ int main()
 					CLIP3(0.4, delta_throttle, 0.8);
 					client.moveByAngleThrottle(0, 0, delta_throttle, 0.0f, 0.0001f);
 					std::this_thread::sleep_for(std::chrono::duration<double>(0.0001));
-				}
+				}*/
 			}
 			else if (controlmode == 6)
 			{

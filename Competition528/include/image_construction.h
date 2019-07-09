@@ -104,12 +104,18 @@ bool comp(const Vec3i &a, const Vec3i &b)
 	return a[0] < b[0];
 }
 
-std::vector<Vec3f> calculate(float height, std::vector<cv::Mat> all_image)
+std::vector<Vec3f> calculate(float height, std::vector<cv::Mat> all_image, std::vector<cv::Mat> all_image2)
 {
 	cv::Mat image;
 	Mat st;
-
+	cv::Mat image2;
+	std::vector<cv::Mat> ImageForPosition;
 	image = image_construction(all_image);
+	//ImageForPosition.push_back(image);
+	//image2 = image_construction2(all_image2);
+	//ImageForPosition.push_back(image2);
+	//image = image_construction(ImageForPosition);
+
 	cv::imwrite("D:\\aresult.jpg", image);
 	st = Mat::zeros(image.size(), image.type());
 	image.convertTo(st, -1, 0.5, 0);
